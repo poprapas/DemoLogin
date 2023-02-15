@@ -56,33 +56,48 @@ export default class Login extends Component {
             this.setState({
                 isLoading: true
             }, () => {
-                if ((this.state.email != 'test@test.com') || (this.state.password != '12345678')) {
+                if (!this.checkEmailandPw()) {
                     Alert.alert(
                         'เข้าสู่ระบบไม่สำเร็จ',
                         'ไม่พบผู้ใช้งานในระบบ กรุณาลองใหม่อีกครั้ง',
                         [
                             {
-                                text: 'ตกลง', onPress: () => this.setState({ isLoading: false, password: '' })
+                                text: 'ตกลง', onPress: () => this.LoginFailed()
                             }
                         ]
                     )
                 }
                 else {
-                    this.setState({
-                        isLoading: false,
-                        modalSuccess: true
-                    })
+                    this.LoginSuccessed()
                 }
             })
         }
     }
 
+    checkEmailandPw() {
+        return (this.state.email == 'test@test.com') && (this.state.password == '12345678')
+    }
+
+    LoginSuccessed() {
+        this.setState({
+            isLoading: false,
+            modalSuccess: true
+        })
+    }
+
+    LoginFailed() {
+        this.setState({
+            isLoading: false,
+            password: ''
+        })
+    }
+
     render() {
         return (
             <LinearGradient colors={['#7733ff', '#9966ff', '#bb99ff']} style={styles.container}>
-                <SafeAreaView style={{ flex: 1, }}>
-                    <View style={{ flex: 1, }}>
-                        <Text type={'bd'} style={{ fontSize: 30, textAlign: 'center', marginVertical: 20 }}>DemoLogin</Text>
+                <SafeAreaView style={styles.container}>
+                    <View style={styles.container}>
+                        <Text type={'bd'} style={styles.txtHeader}>DemoLogin</Text>
 
                         <View style={styles.boxInput}>
                             <MaterialIcons name="email" size={26} color="#fff" style={styles.icon} />
@@ -131,8 +146,8 @@ export default class Login extends Component {
                             </TouchableOpacity>
                         </View>
 
-                        <TouchableOpacity activeOpacity={1} style={{ alignSelf: 'flex-end', marginRight: 20 }}>
-                            <Text type={'light'} style={{ fontSize: 16, textDecorationLine: 'underline', }}>ลืมรหัสผ่าน?</Text>
+                        <TouchableOpacity activeOpacity={1} style={styles.btnFogetpw}>
+                            <Text type={'light'} style={styles.txtForgetpw}>ลืมรหัสผ่าน?</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.btnLogin} onPress={() => this.Login()}>
@@ -140,20 +155,20 @@ export default class Login extends Component {
                         </TouchableOpacity>
                     </View>
 
-                    {this.modalSuccess()}
-
-                    <TouchableOpacity activeOpacity={1} style={{ marginVertical: 5, alignSelf: 'center', width: 200, alignItems: 'center', }}>
-                        <Text style={{ textDecorationLine: 'underline', }}>ลงทะเบียนเข้าใช้งาน</Text>
+                    <TouchableOpacity activeOpacity={1} style={styles.btnSignin}>
+                        <Text style={styles.txtUnderline}>ลงทะเบียนเข้าใช้งาน</Text>
                     </TouchableOpacity>
 
-                    <Text type={'light'} style={{ fontSize: 12, textAlign: 'center', marginBottom: 20 }}>Created by. Prapassorn Siriphanurak</Text>
+                    <Text type={'light'} style={styles.txtCreatedby}>Created by. Prapassorn Siriphanurak</Text>
+
+                    {this.modalSuccess()}
 
                 </SafeAreaView>
 
                 {this.state.isLoading ?
-                    <View style={{ position: 'absolute', backgroundColor: '#rgba(0,0,0,0.5)', width: '100%', height: '100%', zIndex: 2, elevation: 5, }}>
+                    <View style={styles.viewLoading}>
                         <ActivityIndicator
-                            style={{ alignSelf: 'center', paddingTop: height / 2 }}
+                            style={styles.ActivityIndicator}
                             color='#fff'
                             size={'large'} />
                     </View> : null}
@@ -167,40 +182,41 @@ export default class Login extends Component {
             <Modal
                 visible={this.state.modalSuccess}
                 transparent={true}
-                onRequestClose={() => this.setState({ modalSuccess: false, })}
+                onRequestClose={() => this.closeModalSuccess()}
                 animationType={'fade'}
                 statusBarTranslucent
             >
-                <View style={{ flex: 1, justifyContent: 'center', }}>
+                <View style={{ ...styles.container, justifyContent: 'center' }}>
                     <TouchableHighlight
-                        onPress={() => this.setState({ modalSuccess: false, })}
-                        style={{ backgroundColor: '#000000', opacity: 0.5, width: '100%', height: '100%' }}>
-                        <View></View>
+                        onPress={() => this.closeModalSuccess()}
+                        style={styles.bgCloseModal}>
+                        <View />
                     </TouchableHighlight>
                     <View
-                        style={{
-                            width: '80%',
-                            height: 150,
-                            borderRadius: 10,
-                            position: 'absolute',
-                            overflow: 'hidden',
-                            alignSelf: 'center',
-                            backgroundColor: '#fff',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
+                        style={styles.boxModalSuccess}>
                         <MaterialIcons name="check-circle" size={60} color="#33cc33" />
-                        <Text type={'bd'} style={{ color: '#33cc33' }}>เข้าสู่ระบบสำเร็จ</Text>
+                        <Text type={'bd'} style={styles.txtColorGreen}>เข้าสู่ระบบสำเร็จ</Text>
                     </View>
                 </View>
             </Modal>
         )
     }
+
+    closeModalSuccess() {
+        this.setState({
+            modalSuccess: false,
+        })
+    }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+    },
+    txtHeader: {
+        fontSize: 35,
+        textAlign: 'center',
+        marginVertical: 20
     },
     boxInput: {
         width: '90%',
@@ -237,5 +253,61 @@ const styles = StyleSheet.create({
     icon: {
         width: 28,
         textAlign: 'center'
+    },
+    btnFogetpw: {
+        alignSelf: 'flex-end',
+        marginRight: 20
+    },
+    txtForgetpw: {
+        fontSize: 16,
+        textDecorationLine: 'underline',
+    },
+    btnSignin: {
+        width: 200,
+        height: 50,
+        marginVertical: 5,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    txtUnderline: {
+        textDecorationLine: 'underline',
+    },
+    txtCreatedby: {
+        fontSize: 12,
+        textAlign: 'center',
+        marginBottom: 20
+    },
+    viewLoading: {
+        position: 'absolute',
+        backgroundColor: '#rgba(0,0,0,0.5)',
+        width: '100%',
+        height: '100%',
+        zIndex: 2,
+        elevation: 5,
+    },
+    ActivityIndicator: {
+        alignSelf: 'center',
+        paddingTop: height / 2
+    },
+    bgCloseModal: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#000',
+        opacity: 0.5,
+    },
+    boxModalSuccess: {
+        width: '80%',
+        height: 150,
+        borderRadius: 10,
+        position: 'absolute',
+        overflow: 'hidden',
+        backgroundColor: '#fff',
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    txtColorGreen: {
+        color: '#33cc33'
     }
 })
